@@ -1,0 +1,64 @@
+# -- Configuration for sidecar
+infrahub:
+  address: "http://infrahub-server-1:8000"                # Infrahub server address
+  token: "06438eb2-8019-4776-878c-0941b1f1d1ec"   # Infrahub SDK API key
+  branch: main                                    # which branch to fetch
+
+# -- Poll interval in seconds
+poll_interval_seconds: 30
+
+# HTTP server configuration
+# listen_address: "0.0.0.0"
+# listen_port: 8001
+
+# -- Logs
+log_level: "INFO"
+
+exporters:
+  # -- Prometheus exporter configuration
+  prometheus:
+    enabled: true
+
+  # -- OTLP exporter configuration
+  otlp:
+    enabled: false
+    endpoint: "http://otel-collector:4317"
+    timeout_seconds: 10
+
+
+# -- Service Discovery for Prometheus
+service_discovery:
+  enabled: true
+  queries:
+    - name: "devices"
+      file_path: "./examples/queries/devices.gql"
+      endpoint_path: "devices"
+      refresh_interval_seconds: 60
+      target_field: "primary_address.node.address.ip"
+      label_mappings:
+        "device_name": "name.value"
+        "location": "site.node.name.value"
+        "role": "role.value"
+        "platform": "platform.node.name.value"
+
+# -- Data sources for metrics
+metrics:
+  kind:
+    - kind: InfraDevice
+      include:
+        - name
+        - description
+        - platform
+        - role
+        - status
+      filters:
+        - site__name__value: "jfk1"
+        - role__value: "edge"
+
+    - kind: LocationRack
+      filters:
+        - site__name__value: "atl1"
+
+  # GraphQL queries for metrics
+  # To Be Implemented (maybe)
+

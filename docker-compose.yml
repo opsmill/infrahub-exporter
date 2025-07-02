@@ -1,0 +1,21 @@
+services:
+  exporter:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: infrahub-exporter:latest
+    environment:
+      - INFRAHUB_exporter_LOG_LEVEL=INFO
+      - exporter_CONFIG=/app/config.yml
+    volumes:
+      - ./examples/config.yml:/app/config.yml:ro
+      - ./examples/queries:/app/examples/queries:ro
+    ports:
+      - "8001:8001"
+    networks:
+      - infrahub_default
+
+networks:
+  infrahub_default:
+    external: true

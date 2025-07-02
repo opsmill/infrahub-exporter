@@ -1,0 +1,39 @@
+[tool.poetry]
+name = "infrahub-exporter"
+version = "0.1.0"
+description = "exporter for Infrahub metrics and service discovery"
+authors = ["OpsMill <info@opsmill.com>"]
+readme = "README.md"
+license = "Apache-2.0"
+homepage = "https://opsmill.com"
+repository = "https://github.com/opsmill/infrahub"
+documentation = "https://docs.infrahub.app/integrations/exporter/"
+packages = [{ include = "infrahub_exporter" }]
+classifiers = [
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.13"
+infrahub-sdk = {version = ">=1.13, <2.0", extras = ["all"]}
+fastapi = "^0.115.0"
+prometheus-client = "^0.18.0"
+pyyaml = "^6.0"
+httpx = "^0.24.1"
+pydantic = "^2.0.0"
+pydantic-settings = "^2.0.0"
+cachetools = "^6.1.0"
+tenacity = "^8.2.2"
+opentelemetry-sdk = "^1.20.0"
+opentelemetry-exporter-otlp-proto-grpc = "^1.20.0"
+uvicorn = "^0.35.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

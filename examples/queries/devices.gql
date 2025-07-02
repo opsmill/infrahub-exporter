@@ -1,0 +1,45 @@
+query {
+  InfraDevice {
+    edges {
+      node {
+        id
+        name {
+          value
+        }
+        primary_address {
+          node {
+            address {
+              ip
+            }
+          }
+        }
+        site {
+          node {
+            name {
+              value
+            }
+          }
+        }
+        role {
+          value
+        }
+        platform {
+          node {
+            name {
+              value
+            }
+          }
+        }
+        tags {
+          edges {
+            node {
+              name {
+                value
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
