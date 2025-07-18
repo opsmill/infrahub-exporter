@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from typing import Any
+from typing import Any, Generator
 
 from infrahub_sdk import InfrahubClient
 from infrahub_sdk.exceptions import SchemaNotFoundError
@@ -9,9 +9,10 @@ from prometheus_client.core import GaugeMetricFamily, REGISTRY
 from opentelemetry import metrics as otel_metrics
 from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
 from opentelemetry.sdk.metrics import MeterProvider
+from opentelemetry.metrics import Observation
 from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
 
-from config import SidecarSettings
+from config import MetricsKind, SidecarSettings
 from infrahub_sdk.node.relationship import RelationshipManager
 from infrahub_sdk.protocols_base import RelatedNode
 
@@ -24,8 +25,21 @@ class MetricEntry:
         self.labels = labels
         self.value = value
 
+
 class MetricsExporter:
     """Unified metrics exporter for Prometheus and OTLP based on configured kinds."""
+
+    class MetricMeter:
+        def __init__(self, kp: MetricsKind, exporter):
+            self.kp = kp
+            self.exporter = exporter
+
+        def _otlp_callback(self, options) -> Generator[Observation, None, None]:
+            """Callback to emit current OTLP metrics."""
+            labels = ["id", "hfid"] + self.kp.include
+            for entry in self.exporter._store[self.kp.kind]:
+                yield Observation(value=entry.value, attributes={label: entry.labels.get(label, "") for label in labels})
+
 
     def __init__(self, client: InfrahubClient, settings: SidecarSettings):
         self.client = client
@@ -52,18 +66,14 @@ class MetricsExporter:
 
         for kp in self.settings.metrics.kind:
             metric_name = f"infrahub_{kp.kind.lower()}_info"
+            metric_meter = self.MetricMeter(kp=kp, exporter=self)
+
             meter.create_observable_gauge(
                 name=metric_name,
                 description=f"Info about Infrahub {kp.kind}",
-                callback=self._otlp_callback,
+                callbacks=[metric_meter._otlp_callback]
             )
         logger.info("OTLP observable gauges created")
-
-    def _otlp_callback(self, observer) -> None:
-        """Callback to emit current OTLP metrics."""
-        for entries in self._store.values():
-            for labels, value in entries:
-                observer.observe(value, labels)
 
     def collect(self):
         """Prometheus collect method: yield metrics from store."""
