@@ -13,6 +13,7 @@ logger = logging.getLogger(name="infrahub-sidecar")
 
 class CachedTargets(BaseModel):
     """Cache entry holding timestamp and list of target groups."""
+
     timestamp: float
     targets: list[dict[str, Any]]
 
@@ -36,7 +37,9 @@ class ServiceDiscoveryManager:
         self._cache[query.name] = CachedTargets(timestamp=now, targets=targets)
         return targets
 
-    async def _fetch_and_transform(self, query: ServiceDiscoveryQuery) -> list[dict[str, Any]]:
+    async def _fetch_and_transform(
+        self, query: ServiceDiscoveryQuery
+    ) -> list[dict[str, Any]]:
         """Load GQL file, execute, and format response for Prometheus."""
         path = Path(query.file_path)
         if not path.is_absolute():
@@ -94,33 +97,37 @@ class ServiceDiscoveryManager:
 
     def _extract_field(self, node: dict[str, Any], path_expr: str) -> Any:
         """Extract nested field via dot-notation; handles arrays and GraphQL edges."""
-        parts = path_expr.split('.')
+        parts = path_expr.split(".")
         current: Any = node
 
         for part in parts:
             # Handle arrays with [] notation
-            if part.endswith('[]'):
+            if part.endswith("[]"):
                 arr_field = part[:-2]
                 arr = current.get(arr_field)
                 values: list[str] = []
-                if isinstance(arr, dict) and 'edges' in arr:
-                    for entry in arr['edges']:
-                        txt = entry.get('node', {}).get('name', {}).get('value')
+                if isinstance(arr, dict) and "edges" in arr:
+                    for entry in arr["edges"]:
+                        txt = entry.get("node", {}).get("name", {}).get("value")
                         if txt is not None:
                             values.append(str(txt))
                 elif isinstance(arr, list):
                     for item in arr:
                         if isinstance(item, (str, int, float, bool)):
                             values.append(str(item))
-                        elif isinstance(item, dict) and 'value' in item:
-                            values.append(str(item['value']))
-                return ','.join(values) if values else None
+                        elif isinstance(item, dict) and "value" in item:
+                            values.append(str(item["value"]))
+                return ",".join(values) if values else None
 
             # Standard nested access or GraphQL node unwrapping
             if isinstance(current, dict) and part in current:
                 current = current[part]
-            elif isinstance(current, dict) and 'node' in current and part in current['node']:
-                current = current['node'][part]
+            elif (
+                isinstance(current, dict)
+                and "node" in current
+                and part in current["node"]
+            ):
+                current = current["node"][part]
             else:
                 return None
 
@@ -129,7 +136,7 @@ class ServiceDiscoveryManager:
 
         # Final extraction
         if isinstance(current, dict):
-            return str(current.get('value', '')) if 'value' in current else None
+            return str(current.get("value", "")) if "value" in current else None
         if isinstance(current, (str, int, float, bool)):
             return str(current)
         return None

@@ -21,6 +21,7 @@ logger = logging.getLogger(name="infrahub-sidecar")
 
 class MetricEntry:
     """Represents a single metric data point with labels and value."""
+
     def __init__(self, labels: dict[str, Any], value: int) -> None:
         self.labels = labels
         self.value = value
@@ -38,8 +39,10 @@ class MetricsExporter:
             """Callback to emit current OTLP metrics."""
             labels = ["id", "hfid"] + self.kp.include
             for entry in self.exporter._store[self.kp.kind]:
-                yield Observation(value=entry.value, attributes={label: entry.labels.get(label, "") for label in labels})
-
+                yield Observation(
+                    value=entry.value,
+                    attributes={label: entry.labels.get(label, "") for label in labels},
+                )
 
     def __init__(self, client: InfrahubClient, settings: SidecarSettings):
         self.client = client
@@ -71,7 +74,7 @@ class MetricsExporter:
             meter.create_observable_gauge(
                 name=metric_name,
                 description=f"Info about Infrahub {kp.kind}",
-                callbacks=[metric_meter._otlp_callback]
+                callbacks=[metric_meter._otlp_callback],
             )
         logger.info("OTLP observable gauges created")
 
@@ -143,19 +146,29 @@ class MetricsExporter:
                 if isinstance(attr, RelatedNode):
                     if attr.initialized:
                         await attr.fetch()
-                        peer = itm._client.store.get(key=attr.peer.id, raise_when_missing=False)
+                        peer = itm._client.store.get(
+                            key=attr.peer.id, raise_when_missing=False
+                        )
                         if peer:
-                            val = peer.get_human_friendly_id_as_string(include_kind=True) or peer.id
+                            val = (
+                                peer.get_human_friendly_id_as_string(include_kind=True)
+                                or peer.id
+                            )
                 # Relationship (multiple)
                 elif isinstance(attr, RelationshipManager):
                     if attr.initialized:
                         peers = []
                         for p in attr.peers:
-                            node = itm._client.store.get(key=p.id, raise_when_missing=False)
+                            node = itm._client.store.get(
+                                key=p.id, raise_when_missing=False
+                            )
                             if not node:
                                 await p.fetch()
                                 node = p.peer
-                            peers.append(node.get_human_friendly_id_as_string(include_kind=True) or node.id)
+                            peers.append(
+                                node.get_human_friendly_id_as_string(include_kind=True)
+                                or node.id
+                            )
                         val = ",".join(peers)
                 # Attribute
                 else:
