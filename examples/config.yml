@@ -1,3 +1,4 @@
+---
 # -- Configuration for sidecar
 infrahub:
   address: "http://infrahub-server-1:8000"                # Infrahub server address
@@ -61,4 +62,3 @@ metrics:
 
   # GraphQL queries for metrics
   # To Be Implemented (maybe)
-
