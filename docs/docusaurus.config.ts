@@ -61,7 +61,7 @@ const config: Config = {
       items: [
         {
           type: "docSidebar",
-          sidebarId: "demoSidebar",
+          sidebarId: "exporterSidebar",
           position: "left",
           label: "DC Fabric Demo",
         },
