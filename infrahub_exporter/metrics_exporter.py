@@ -37,7 +37,9 @@ class MetricsExporter(Collector):
             self.kp = kp
             self.exporter = exporter
 
-        def _otlp_callback(self, options: Any | None) -> Generator[Observation, None, None]:
+        def _otlp_callback(
+            self, options: Any | None
+        ) -> Generator[Observation, None, None]:
             """Callback to emit current OTLP metrics."""
             labels = ["id", "hfid"] + self.kp.include
             for entry in self.exporter._store[self.kp.kind]:

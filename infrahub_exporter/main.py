@@ -58,7 +58,9 @@ class Server:
                 path = f"/sd/{query.name}"
 
                 @self.app.get(path)
-                async def sd_endpoint(req: Request, q: ServiceDiscoveryQuery = query) -> JSONResponse:
+                async def sd_endpoint(
+                    req: Request, q: ServiceDiscoveryQuery = query
+                ) -> JSONResponse:
                     return await self._handle_sd(q)
 
                 logger.info(f"Registered SD endpoint: {path}")
@@ -78,7 +80,6 @@ class Server:
                 return JSONResponse(content=[], status_code=500)
 
         return JSONResponse(content=[], status_code=404)
-
 
     async def start(self) -> None:
         config = uvicorn.Config(
