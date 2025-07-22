@@ -6,7 +6,6 @@ ignorecase: false
 action:
   name: replace
 swap:
-<<<<<<< HEAD
   (?<![\.|/|#])ansible[\.!]?\s: Ansible
   (?<![\.|/|#])docker[\.!]?\s: Docker
   (?<![\.|/|#])[Dd]ockerhub[\.!]?\s: DockerHub
@@ -36,11 +35,3 @@ swap:
   (?:[^/]terraform): Terraform
   (?:ubuntu): Ubuntu
   (?:[Vv]s\W?[Cc]ode): VS Code
-=======
-  (?i:[^/]Github): GitHub
-  (?i:gitpod): GitPod
-  (?i:[^/]Graphql): GraphQL
-  infrahub(?:\s|$): Infrahub
-  (?i:Openconfig): OpenConfig
-  opsmill(?:\s|$): OpsMill
->>>>>>> refs/remotes/origin/main
