@@ -1,3 +1,4 @@
+---
 services:
   exporter:
     restart: unless-stopped

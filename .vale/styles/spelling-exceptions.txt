@@ -1,16 +1,25 @@
 agent
 Alibaba
+<<<<<<< HEAD
 allocation_weight
 Ansible
 anonymized
 append_git_suffix
 APIs
+=======
+Ansible
+APIs
+append_git_suffix
+>>>>>>> refs/remotes/origin/main
 artifact_definitions
 artifact_name
 async
 Authentik
 boolean
+<<<<<<< HEAD
 certifi
+=======
+>>>>>>> refs/remotes/origin/main
 check_definitions
 class_name
 CloudFormation
@@ -45,23 +54,35 @@ eslint
 excalidraw
 fanout
 file_path
+<<<<<<< HEAD
 generate_artifacts
 generator_definition
 generator_definitions
 get_artifact
 github
 gitlab
+=======
+generator_definition
+generator_definitions
+github
+>>>>>>> refs/remotes/origin/main
 graphene
 graphiql
 graphql
 greymatter
+<<<<<<< HEAD
 healthcheck
+=======
+>>>>>>> refs/remotes/origin/main
 hfid
 hfids
 hostname
 httpx
 human_friendly_id
+<<<<<<< HEAD
 id_token
+=======
+>>>>>>> refs/remotes/origin/main
 idempotency
 include_in_menu
 Infrahub
@@ -69,7 +90,10 @@ Infrahub's
 infrahubctl
 IP
 IPAddress
+<<<<<<< HEAD
 IPHost
+=======
+>>>>>>> refs/remotes/origin/main
 IPAM
 is_empty
 is_ip_within
@@ -80,9 +104,13 @@ Jotai
 json
 JSONSchema
 kbps
+<<<<<<< HEAD
 kubectl
 Keycloak
 livestream
+=======
+Keycloak
+>>>>>>> refs/remotes/origin/main
 Loopbacks
 markdownlint
 max_count
@@ -94,6 +122,7 @@ modularization
 namespace
 namespaces
 Nautobot
+<<<<<<< HEAD
 Neo4j
 Netbox
 Netutils
@@ -113,11 +142,25 @@ Prefetch
 profile_name
 pseudocode
 psutil
+=======
+Netbox
+Newsfragment
+Nornir
+npm
+o'brian
+openconfig
+opentelemetry
+order_by
+order_weight
+Prefetch
+profile_name
+>>>>>>> refs/remotes/origin/main
 PyPI
 query_peers
 rebase
 rebased
 Redoc
+<<<<<<< HEAD
 regenerate_host_artifact
 repo
 REST
@@ -161,3 +204,33 @@ VSCode
 Slurp'it
 walkthrough
 Otternet
+=======
+repo
+ressources
+REST
+schema_mapping
+sdk
+subcommand
+subnet
+template_path
+toml
+towncrier
+Towncrier
+uncheck
+uniqueness_constraints
+upsert
+upserting
+Upserting
+userinfo
+uuid
+UUID
+validator
+validators
+Version Control
+Vitest
+VLANs
+vscode
+VSCode
+Yaml
+yamllint
+>>>>>>> refs/remotes/origin/main

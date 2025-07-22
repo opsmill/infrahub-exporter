@@ -21,8 +21,11 @@ exceptions:
   - CA certificates
   - CI
   - Codespaces
+<<<<<<< HEAD
   - Computed Attribute
   - Computed Attributes
+=======
+>>>>>>> refs/remotes/origin/main
   - CoreArtifactTarget
   - CoreRepository
   - CoreGroup
@@ -41,7 +44,10 @@ exceptions:
   - High Availability
   - Human Friendly Identifier
   - Infrahub
+<<<<<<< HEAD
   - Infrahub Enterprise
+=======
+>>>>>>> refs/remotes/origin/main
   - infrahubctl
   - IPHost
   - IP
@@ -55,9 +61,13 @@ exceptions:
   - JWT
   - Namespace
   - NATS
+<<<<<<< HEAD
   - Neo4j
   - Node
   - NumberPool
+=======
+  - Node
+>>>>>>> refs/remotes/origin/main
   - OAuth2
   - OIDC
   - Open ID Connect
@@ -67,6 +77,7 @@ exceptions:
   - RabbitMQ
   - REST
   - RFile
+<<<<<<< HEAD
   - Schema
   - SDK
   - Single sign-on
@@ -77,9 +88,20 @@ exceptions:
   - TransformPython
   - TruffleHog
   - Trusted Root Certificate Store
+=======
+  - SDK
+  - Single sign-on
+  - SSO
+  - TLS
+  - Tony Stark
+  - TransformPython
+>>>>>>> refs/remotes/origin/main
   - UI
   - Vale
   - VS Code
   - VS Code extensions
   - WebUI
+<<<<<<< HEAD
   - Slurp'it
+=======
+>>>>>>> refs/remotes/origin/main

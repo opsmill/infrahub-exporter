@@ -4,6 +4,10 @@ message: "Did you really mean '%s'?"
 level: error
 filters:
   - '[pP]y.*\b'
+<<<<<<< HEAD
   - '\bimport_.*\b' # New filter to ignore variables starting with 'import_'
   - '\w+__value' # New filter to skip Infrahub filters in documentation (name__value)
+=======
+  - '\bimport_.*\b'    # New filter to ignore variables starting with 'import_'
+>>>>>>> refs/remotes/origin/main
 ignore: spelling-exceptions.txt
