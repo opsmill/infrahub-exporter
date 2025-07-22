@@ -10,9 +10,8 @@ services:
       - exporter_CONFIG=/app/config.yml
       - OTEL_METRIC_EXPORT_INTERVAL=30000
     volumes:
-#     - ./infrahub_exporter:/app/infrahub_exporter:ro
-      - ./examples/config.yml:/app/config.yml:ro
-      - ./examples/queries:/app/examples/queries:ro
+      - ../examples/config.yml:/app/config.yml:ro
+      - ../examples/queries:/app/examples/queries:ro
     ports:
       - "8001:8001"
     networks:
@@ -23,7 +22,7 @@ services:
       replicas: 0
     image: otel/opentelemetry-collector-contrib:0.128.0
     volumes:
-      - ./examples/otel.yml:/etc/otelcol-contrib/config.yaml
+      - ../examples/otel.yml:/etc/otelcol-contrib/config.yaml
     ports:
       - 1888:1888 # pprof extension
       - 8888:8888 # Prometheus metrics exposed by the Collector

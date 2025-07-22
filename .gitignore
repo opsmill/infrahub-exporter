@@ -1,0 +1,36 @@
+# OS
+**/.DS_Store
+
+#  Python
+# Byte‑compiled / optimized files
+**/*.pyc
+**/__pycache__/
+
+# Coverage reports
+.coverage
+coverage.xml
+
+# Virtual env / Python version management
+.python-version
+.env
+.envrc
+.direnv/
+
+# Cache directories
+**/.ruff_cache
+
+# Test artifacts
+*junit*
+
+#  Node / Build
+**/node_modules/
+dist/
+build/
+
+#  IDEs & Editors
+**/.idea/
+.vscode/settings.json
+
+#  Miscellaneous
+script.py
+**/*.local.*

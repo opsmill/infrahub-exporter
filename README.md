@@ -1,8 +1,18 @@
+<!-- markdownlint-disable -->
+![Infrahub Logo](https://assets-global.website-files.com/657aff4a26dd8afbab24944b/657b0e0678f7fd35ce130776_Logo%20INFRAHUB.svg)
+<!-- markdownlint-restore -->
+
 # Infrahub Exporter
 
-Infrahub Exporter is a service that exports metrics and service discovery information from Infrahub to monitoring systems like Prometheus and OpenTelemetry.
+[Infrahub](https://github.com/opsmill/infrahub) by [OpsMill](https://opsmill.com) acts as a central hub to manage the data, templates and playbooks that powers your infrastructure. At its heart, Infrahub is built on 3 fundamental pillars:
 
-## Overview
+- **A Flexible Schema**: A model of the infrastructure and the relation between the objects in the model, that's easily extensible.
+- **Version Control**: Natively integrated into the graph database which opens up some new capabilities like branching, diffing, and merging data directly in the database.
+- **Unified Storage**: By combining a graph database and git, Infrahub stores data and code needed to manage the infrastructure.
+
+## Introduction
+
+Infrahub Exporter is a service that exports metrics and service discovery information from Infrahub to monitoring systems like Prometheus and OpenTelemetry.
 
 Infrahub Exporter acts as a bridge between your Infrahub instance and monitoring tools, providing:
 
@@ -10,127 +20,6 @@ Infrahub Exporter acts as a bridge between your Infrahub instance and monitoring
 2. **Service Discovery**: Provides dynamic service discovery for Prometheus based on Infrahub data
 3. **OpenTelemetry Integration**: Supports sending metrics to OpenTelemetry collectors
 
-## Features
+## Using Infrahub exporter
 
-- **Prometheus Integration**: Exposes metrics in Prometheus format
-- **OpenTelemetry Support**: Sends metrics to OTLP-compatible collectors
-- **Dynamic Service Discovery**: Generates Prometheus service discovery files based on GraphQL queries
-- **Flexible Configuration**: Configurable via YAML with environment variable overrides
-- **Caching**: Efficient data retrieval with caching to reduce load on Infrahub
-- **Resilience**: Automatic retries and error handling for API calls
-
-## Installation
-
-### Using Poetry
-
-```bash
-# Clone the repository
-git clone https://github.com/opsmill/infrahub-exporter.git
-cd infrahub-exporter
-
-# Install dependencies
-poetry install
-
-# Run the exporter
-poetry run python -m infrahub_exporter --config path/to/config.yml
-```
-
-### Using Docker
-
-```bash
-docker run -v $(pwd)/config.yml:/app/config.yml -p 8001:8001 opsmill/infrahub-exporter:latest
-```
-
-## Configuration
-
-Create a `config.yml` file with the following structure:
-
-```yaml
-# Infrahub connection settings
-infrahub:
-  address: "http://localhost:8000"        # Infrahub server address
-  token: "your-api-token"                 # Infrahub SDK API key
-  branch: main                            # Which branch to fetch
-
-# Poll interval in seconds
-poll_interval_seconds: 30
-
-# HTTP server configuration
-listen_address: "0.0.0.0"
-listen_port: 8001
-
-# Log level
-log_level: "INFO"
-
-# Exporter configuration
-exporters:
-  # Prometheus exporter
-  prometheus:
-    enabled: true
-
-  # OTLP exporter
-  otlp:
-    enabled: false
-    endpoint: "http://otel-collector:4317"
-    timeout_seconds: 10
-
-# Service Discovery for Prometheus
-service_discovery:
-  enabled: true
-  queries:
-    - name: "devices"
-      file_path: "./queries/devices.gql"
-      endpoint_path: "devices"
-      refresh_interval_seconds: 60
-      target_field: "primary_address.node.address.ip"
-      label_mappings:
-        "device_name": "name.value"
-        "location": "site.node.name.value"
-        "role": "role.value"
-        "platform": "platform.node.name.value"
-
-# Data sources for metrics
-metrics:
-  kind:
-    - kind: InfraDevice
-      include:
-        - name
-        - description
-        - platform
-        - role
-        - status
-      filters:
-        - site__name__value: "dc1"
-        - role__value: "edge"
-```
-
-## Usage
-
-### Prometheus Integration
-
-Add the following to your Prometheus configuration:
-
-```yaml
-scrape_configs:
-  - job_name: 'infrahub'
-    scrape_interval: 30s
-    static_configs:
-      - targets: ['infrahub-exporter:8001']
-
-  - job_name: 'infrahub-sd'
-    http_sd_configs:
-      - url: http://infrahub-exporter:8001/sd/devices
-        refresh_interval: 60s
-```
-
-### OpenTelemetry Integration
-
-Configure the OTLP exporter in your config.yml:
-
-```yaml
-exporters:
-  otlp:
-    enabled: true
-    endpoint: "http://otel-collector:4317"
-    timeout_seconds: 10
-```
+Documentation for using Infrahub exporter is available [here](https://docs.infrahub.app/exporter/)
