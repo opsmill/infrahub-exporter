@@ -2,18 +2,17 @@ import asyncio
 import logging
 import argparse
 import sys
-from typing import Any, Optional
+import uvicorn
 
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse, PlainTextResponse
-import uvicorn
-from infrahub_sdk import Config, InfrahubClient
-
 from prometheus_client import REGISTRY, generate_latest
 
-from config import ServiceDiscoveryConfig, SidecarSettings
-from service_discovery import ServiceDiscoveryManager
-from metrics_exporter import MetricsExporter
+from infrahub_sdk import Config, InfrahubClient
+
+from .config import ServiceDiscoveryConfig, ServiceDiscoveryQuery, SidecarSettings
+from .service_discovery import ServiceDiscoveryManager
+from .metrics_exporter import MetricsExporter
 
 # Setup root logger
 logger = logging.getLogger("infrahub-sidecar")
@@ -24,7 +23,7 @@ class Server:
 
     def __init__(
         self,
-        sd_config: Optional[ServiceDiscoveryConfig],
+        sd_config: ServiceDiscoveryConfig | None,
         client: InfrahubClient,
         listen_address: str,
         listen_port: int,
@@ -39,13 +38,13 @@ class Server:
         )
         self._setup_routes()
 
-    def _setup_routes(self):
+    def _setup_routes(self) -> JSONResponse | None:
         @self.app.get("/")
-        async def health():
+        async def health() -> PlainTextResponse:
             return PlainTextResponse("OK")
 
         @self.app.get("/metrics")
-        async def metrics():
+        async def metrics() -> Response:
             data = generate_latest(REGISTRY)
             return Response(
                 content=data,
@@ -59,22 +58,27 @@ class Server:
                 path = f"/sd/{query.name}"
 
                 @self.app.get(path)
-                async def sd_endpoint(req: Request, q=query):
+                async def sd_endpoint(req: Request, q: ServiceDiscoveryQuery = query) -> JSONResponse:
                     return await self._handle_sd(q)
 
                 logger.info(f"Registered SD endpoint: {path}")
+        return None
 
-    async def _handle_sd(self, query: Any):
-        try:
-            targets = await self.sd_manager.get_targets(query)
-            resp = JSONResponse(content=targets)
-            resp.headers["X-Prometheus-Refresh-Interval-Seconds"] = str(
-                query.refresh_interval_seconds
-            )
-            return resp
-        except Exception as e:
-            logger.error(f"SD '{query.name}' error: {e}")
-            return JSONResponse(content=[], status_code=500)
+    async def _handle_sd(self, query: ServiceDiscoveryQuery) -> JSONResponse:
+        if self.sd_manager:
+            try:
+                targets = await self.sd_manager.get_targets(query)
+                resp = JSONResponse(content=targets)
+                resp.headers["X-Prometheus-Refresh-Interval-Seconds"] = str(
+                    query.refresh_interval_seconds
+                )
+                return resp
+            except Exception as e:
+                logger.error(f"SD '{query.name}' error: {e}")
+                return JSONResponse(content=[], status_code=500)
+
+        return JSONResponse(content=[], status_code=404)
+
 
     async def start(self) -> None:
         config = uvicorn.Config(
@@ -127,7 +131,7 @@ async def main() -> None:
     )
 
     # Start metrics exporter
-    metrics_exporter = MetricsExporter(client, cfg)
+    metrics_exporter = MetricsExporter(client=client, settings=cfg)
     await metrics_exporter.start()
 
     # Start HTTP server for metrics & service discovery

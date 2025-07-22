@@ -2,19 +2,21 @@ import asyncio
 import logging
 from typing import Any, Generator
 
-from infrahub_sdk import InfrahubClient
-from infrahub_sdk.exceptions import SchemaNotFoundError
-from infrahub_sdk.node.node import InfrahubNode
 from prometheus_client.core import GaugeMetricFamily, REGISTRY
+from prometheus_client.registry import Collector
 from opentelemetry import metrics as otel_metrics
 from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.metrics import Observation
 from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
 
-from config import MetricsKind, SidecarSettings
+from infrahub_sdk import InfrahubClient
+from infrahub_sdk.exceptions import SchemaNotFoundError
+from infrahub_sdk.node.node import InfrahubNode
 from infrahub_sdk.node.relationship import RelationshipManager
 from infrahub_sdk.protocols_base import RelatedNode
+
+from .config import MetricsKind, SidecarSettings
 
 logger = logging.getLogger(name="infrahub-sidecar")
 
@@ -27,15 +29,15 @@ class MetricEntry:
         self.value = value
 
 
-class MetricsExporter:
+class MetricsExporter(Collector):
     """Unified metrics exporter for Prometheus and OTLP based on configured kinds."""
 
     class MetricMeter:
-        def __init__(self, kp: MetricsKind, exporter):
+        def __init__(self, kp: MetricsKind, exporter: "MetricsExporter"):
             self.kp = kp
             self.exporter = exporter
 
-        def _otlp_callback(self, options) -> Generator[Observation, None, None]:
+        def _otlp_callback(self, options: Any | None) -> Generator[Observation, None, None]:
             """Callback to emit current OTLP metrics."""
             labels = ["id", "hfid"] + self.kp.include
             for entry in self.exporter._store[self.kp.kind]:
@@ -78,7 +80,7 @@ class MetricsExporter:
             )
         logger.info("OTLP observable gauges created")
 
-    def collect(self):
+    def collect(self) -> Generator[GaugeMetricFamily, None, None]:
         """Prometheus collect method: yield metrics from store."""
         for kind, entries in self._store.items():
             # Find the corresponding MetricsKind config
@@ -102,6 +104,7 @@ class MetricsExporter:
     async def _fetch_and_store(self, kp: Any) -> None:
         """Fetch items for one kind and store MetricEntry list."""
         try:
+            items: list[InfrahubNode] = []
             logger.debug(f"Fetching items for kind '{kp.kind}'")
             filter_args: dict[str, Any] = {}
             for f in kp.filters:
@@ -124,10 +127,8 @@ class MetricsExporter:
 
         except SchemaNotFoundError:
             logger.error(f"Schema not found for kind '{kp.kind}'")
-            items: list[InfrahubNode] = []
         except Exception as exc:
             logger.error(f"Error fetching items for kind '{kp.kind}': {exc}")
-            items = []
 
         entries: list[MetricEntry] = []
         for itm in items:
