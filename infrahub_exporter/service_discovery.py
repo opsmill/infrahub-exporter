@@ -6,7 +6,7 @@ from typing import Any
 from pydantic import BaseModel
 from infrahub_sdk import InfrahubClient
 
-from config import ServiceDiscoveryQuery
+from .config import ServiceDiscoveryQuery
 
 logger = logging.getLogger(name="infrahub-sidecar")
 
@@ -28,13 +28,16 @@ class ServiceDiscoveryManager:
     async def get_targets(self, query: ServiceDiscoveryQuery) -> list[dict[str, Any]]:
         """Return cached targets or fetch fresh if TTL expired."""
         now = time.monotonic()
-        cached = self._cache.get(query.name)
-        if cached and (now - cached.timestamp) < query.refresh_interval_seconds:
-            logger.debug(f"Returning cached SD for '{query.name}'")
-            return cached.targets
+        targets = []
+        if query.name:
+            cached = self._cache.get(query.name)
 
-        targets = await self._fetch_and_transform(query)
-        self._cache[query.name] = CachedTargets(timestamp=now, targets=targets)
+            if cached and (now - cached.timestamp) < query.refresh_interval_seconds:
+                logger.debug(f"Returning cached SD for '{query.name}'")
+                return cached.targets
+
+            targets = await self._fetch_and_transform(query)
+            self._cache[query.name] = CachedTargets(timestamp=now, targets=targets)
         return targets
 
     async def _fetch_and_transform(
