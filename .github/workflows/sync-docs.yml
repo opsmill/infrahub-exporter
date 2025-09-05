@@ -1,6 +1,9 @@
-name: Sync Folders
+---
+# yamllint disable rule:truthy rule:truthy rule:line-length
+name: Sync Docs Folders
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -13,15 +16,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: source-repo
 
       - name: Checkout target repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: opsmill/infrahub-docs
-          token: ${{ secrets.PAT_TOKEN }}
+          token: ${{ secrets.GH_INFRAHUB_BOT_TOKEN }}
           path: target-repo
 
       - name: Sync folders
