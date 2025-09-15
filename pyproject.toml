@@ -34,7 +34,7 @@ opentelemetry-exporter-otlp-proto-grpc = "^1.20.0"
 uvicorn = "^0.35.0"
 
 [tool.poetry.group.dev.dependencies]
-ruff = "^0.12.11"
+ruff = "^0.12.12"
 
 [tool.mypy]
 pretty = true
