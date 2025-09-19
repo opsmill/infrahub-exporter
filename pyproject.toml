@@ -22,7 +22,7 @@ classifiers = [
 python = ">=3.10,<3.13"
 infrahub-sdk = {version = ">=1.13, <2.0", extras = ["all"]}
 fastapi = "^0.116.2"
-prometheus-client = "^0.22.1"
+prometheus-client = "^0.23.1"
 pyyaml = "^6.0"
 httpx = "^0.28.1"
 pydantic = "^2.11.9"
@@ -34,7 +34,7 @@ opentelemetry-exporter-otlp-proto-grpc = "^1.20.0"
 uvicorn = "^0.35.0"
 
 [tool.poetry.group.dev.dependencies]
-ruff = "^0.13.0"
+ruff = "^0.13.1"
 
 [tool.mypy]
 pretty = true
