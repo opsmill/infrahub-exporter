@@ -31,5 +31,6 @@ COPY . ./
 
 EXPOSE 8001
 
-CMD ["poetry", "run", "python", "infrahub_exporter/main.py", "--config", "/app/config.yml"]
+ENV EXPORTER_CONFIG=/app/config.yml
+CMD ["sh", "-c", "poetry run python -m infrahub_exporter.main --config ${EXPORTER_CONFIG}"]
 
