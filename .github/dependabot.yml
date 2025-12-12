@@ -19,8 +19,8 @@ updates:
         patterns:
           - "*"
 
-  # Group all pip updates except infrahub-sdk
-  - package-ecosystem: "pip"
+  # Group all uv updates
+  - package-ecosystem: "uv"
     directory: "/"
     schedule:
       interval: "daily"
