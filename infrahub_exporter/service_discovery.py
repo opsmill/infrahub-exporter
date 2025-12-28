@@ -1,10 +1,10 @@
-import time
 import logging
+import time
 from pathlib import Path
 from typing import Any
 
-from pydantic import BaseModel
 from infrahub_sdk import InfrahubClient
+from pydantic import BaseModel
 
 from .config import ServiceDiscoveryQuery
 
@@ -40,9 +40,7 @@ class ServiceDiscoveryManager:
             self._cache[query.name] = CachedTargets(timestamp=now, targets=targets)
         return targets
 
-    async def _fetch_and_transform(
-        self, query: ServiceDiscoveryQuery
-    ) -> list[dict[str, Any]]:
+    async def _fetch_and_transform(self, query: ServiceDiscoveryQuery) -> list[dict[str, Any]]:
         """Load GQL file, execute, and format response for Prometheus."""
         path = Path(query.file_path)
         if not path.is_absolute():
@@ -125,11 +123,7 @@ class ServiceDiscoveryManager:
             # Standard nested access or GraphQL node unwrapping
             if isinstance(current, dict) and part in current:
                 current = current[part]
-            elif (
-                isinstance(current, dict)
-                and "node" in current
-                and part in current["node"]
-            ):
+            elif isinstance(current, dict) and "node" in current and part in current["node"]:
                 current = current["node"][part]
             else:
                 return None

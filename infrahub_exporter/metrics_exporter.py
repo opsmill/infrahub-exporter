@@ -2,19 +2,18 @@ import asyncio
 import logging
 from typing import Any, Generator
 
-from prometheus_client.core import GaugeMetricFamily, REGISTRY
-from prometheus_client.registry import Collector
-from opentelemetry import metrics as otel_metrics
-from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
-from opentelemetry.sdk.metrics import MeterProvider
-from opentelemetry.metrics import Observation
-from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
-
 from infrahub_sdk import InfrahubClient
 from infrahub_sdk.exceptions import SchemaNotFoundError
 from infrahub_sdk.node.node import InfrahubNode
 from infrahub_sdk.node.relationship import RelationshipManager
 from infrahub_sdk.protocols_base import RelatedNode
+from opentelemetry import metrics as otel_metrics
+from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
+from opentelemetry.metrics import Observation
+from opentelemetry.sdk.metrics import MeterProvider
+from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
+from prometheus_client.core import REGISTRY, GaugeMetricFamily
+from prometheus_client.registry import Collector
 
 from .config import MetricsKind, SidecarSettings
 
@@ -33,13 +32,11 @@ class MetricsExporter(Collector):
     """Unified metrics exporter for Prometheus and OTLP based on configured kinds."""
 
     class MetricMeter:
-        def __init__(self, kp: MetricsKind, exporter: "MetricsExporter"):
+        def __init__(self, kp: MetricsKind, exporter: "MetricsExporter") -> None:
             self.kp = kp
             self.exporter = exporter
 
-        def _otlp_callback(
-            self, options: Any | None
-        ) -> Generator[Observation, None, None]:
+        def _otlp_callback(self, options: Any | None) -> Generator[Observation, None, None]:
             """Callback to emit current OTLP metrics."""
             labels = ["id", "hfid"] + self.kp.include
             for entry in self.exporter._store[self.kp.kind]:
@@ -48,7 +45,7 @@ class MetricsExporter(Collector):
                     attributes={label: entry.labels.get(label, "") for label in labels},
                 )
 
-    def __init__(self, client: InfrahubClient, settings: SidecarSettings):
+    def __init__(self, client: InfrahubClient, settings: SidecarSettings) -> None:
         self.client = client
         self.settings = settings
         self._store: dict[str, list[MetricEntry]] = {}
@@ -103,7 +100,7 @@ class MetricsExporter(Collector):
                 )
             yield metric
 
-    async def _fetch_and_store(self, kp: Any) -> None:
+    async def _fetch_and_store(self, kp: MetricsKind) -> None:
         """Fetch items for one kind and store MetricEntry list."""
         try:
             items: list[InfrahubNode] = []
@@ -149,29 +146,19 @@ class MetricsExporter(Collector):
                 if isinstance(attr, RelatedNode):
                     if attr.initialized:
                         await attr.fetch()
-                        peer = itm._client.store.get(
-                            key=attr.peer.id, raise_when_missing=False
-                        )
+                        peer = itm._client.store.get(key=attr.peer.id, raise_when_missing=False)
                         if peer:
-                            val = (
-                                peer.get_human_friendly_id_as_string(include_kind=True)
-                                or peer.id
-                            )
+                            val = peer.get_human_friendly_id_as_string(include_kind=True) or peer.id
                 # Relationship (multiple)
                 elif isinstance(attr, RelationshipManager):
                     if attr.initialized:
                         peers = []
                         for p in attr.peers:
-                            node = itm._client.store.get(
-                                key=p.id, raise_when_missing=False
-                            )
+                            node = itm._client.store.get(key=p.id, raise_when_missing=False)
                             if not node:
                                 await p.fetch()
                                 node = p.peer
-                            peers.append(
-                                node.get_human_friendly_id_as_string(include_kind=True)
-                                or node.id
-                            )
+                            peers.append(node.get_human_friendly_id_as_string(include_kind=True) or node.id)
                         val = ",".join(peers)
                 # Attribute
                 else:

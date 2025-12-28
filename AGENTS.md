@@ -5,6 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Overview
 
 Infrahub Exporter is a Python microservice that bridges Infrahub (infrastructure management platform) with monitoring systems. It provides:
+
 - Prometheus metrics export via `/metrics` endpoint
 - Dynamic service discovery for Prometheus via `/sd/{query_name}` endpoints
 - OpenTelemetry (OTLP) metrics export via gRPC
@@ -52,6 +53,7 @@ The codebase follows an async event-driven pattern with four core modules:
 ## Configuration
 
 Configuration is YAML-based (see `examples/config.yml`). Key sections:
+
 - `infrahub`: Server address, API token, branch
 - `exporters`: Enable/configure Prometheus and OTLP exporters
 - `service_discovery`: GraphQL queries for dynamic target discovery
@@ -59,7 +61,7 @@ Configuration is YAML-based (see `examples/config.yml`). Key sections:
 
 ## Python Version
 
-Targets Python 3.10-3.12 (see `pyproject.toml`).
+Targets Python 3.10-3.13 (see `pyproject.toml`).
 
 ## Type Checking
 
