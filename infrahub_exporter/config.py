@@ -25,9 +25,7 @@ class MetricsConfig(BaseModel):
 class InfrahubConfig(BaseModel):
     """Configuration for Infrahub connection."""
 
-    address: str = Field(
-        default="http://localhost:8000", description="Infrahub API base URL"
-    )
+    address: str = Field(default="http://localhost:8000", description="Infrahub API base URL")
     token: str = Field(..., description="Bearer token for Infrahub authentication")
     branch: str = Field(default="main", description="Git branch or version to query")
 
@@ -36,26 +34,16 @@ class InfrahubConfig(BaseModel):
 class PrometheusConfig(BaseModel):
     """Configuration for Prometheus exporter."""
 
-    enabled: bool = Field(
-        default=False, description="Enable Prometheus metrics endpoint"
-    )
-    metrics_path: str = Field(
-        default="/metrics", description="HTTP path for metrics exposure"
-    )
+    enabled: bool = Field(default=False, description="Enable Prometheus metrics endpoint")
+    metrics_path: str = Field(default="/metrics", description="HTTP path for metrics exposure")
 
 
 class OTLPConfig(BaseModel):
     """Configuration for OTLP exporter."""
 
-    enabled: bool = Field(
-        default=False, description="Enable OpenTelemetry exporting via OTLP"
-    )
-    endpoint: str = Field(
-        default="http://otel-collector:4317", description="OTLP collector endpoint URL"
-    )
-    timeout_seconds: int = Field(
-        default=10, gt=0, description="Request timeout in seconds for OTLP exporter"
-    )
+    enabled: bool = Field(default=False, description="Enable OpenTelemetry exporting via OTLP")
+    endpoint: str = Field(default="http://otel-collector:4317", description="OTLP collector endpoint URL")
+    timeout_seconds: int = Field(default=10, gt=0, description="Request timeout in seconds for OTLP exporter")
 
 
 class ExportersConfig(BaseModel):
@@ -92,9 +80,7 @@ class SidecarSettings(BaseSettings):
 
     infrahub: InfrahubConfig
     exporters: ExportersConfig = Field(default_factory=ExportersConfig)
-    service_discovery: ServiceDiscoveryConfig = Field(
-        default_factory=ServiceDiscoveryConfig
-    )
+    service_discovery: ServiceDiscoveryConfig = Field(default_factory=ServiceDiscoveryConfig)
     metrics: MetricsConfig = Field(default_factory=MetricsConfig)
     poll_interval_seconds: int = Field(default=60, gt=1)
     listen_address: str = Field(default="0.0.0.0")

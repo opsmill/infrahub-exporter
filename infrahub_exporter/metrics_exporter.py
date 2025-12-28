@@ -36,9 +36,7 @@ class MetricsExporter(Collector):
             self.kp = kp
             self.exporter = exporter
 
-        def _otlp_callback(
-            self, options: Any | None
-        ) -> Generator[Observation, None, None]:
+        def _otlp_callback(self, options: Any | None) -> Generator[Observation, None, None]:
             """Callback to emit current OTLP metrics."""
             labels = ["id", "hfid"] + self.kp.include
             for entry in self.exporter._store[self.kp.kind]:
@@ -148,29 +146,19 @@ class MetricsExporter(Collector):
                 if isinstance(attr, RelatedNode):
                     if attr.initialized:
                         await attr.fetch()
-                        peer = itm._client.store.get(
-                            key=attr.peer.id, raise_when_missing=False
-                        )
+                        peer = itm._client.store.get(key=attr.peer.id, raise_when_missing=False)
                         if peer:
-                            val = (
-                                peer.get_human_friendly_id_as_string(include_kind=True)
-                                or peer.id
-                            )
+                            val = peer.get_human_friendly_id_as_string(include_kind=True) or peer.id
                 # Relationship (multiple)
                 elif isinstance(attr, RelationshipManager):
                     if attr.initialized:
                         peers = []
                         for p in attr.peers:
-                            node = itm._client.store.get(
-                                key=p.id, raise_when_missing=False
-                            )
+                            node = itm._client.store.get(key=p.id, raise_when_missing=False)
                             if not node:
                                 await p.fetch()
                                 node = p.peer
-                            peers.append(
-                                node.get_human_friendly_id_as_string(include_kind=True)
-                                or node.id
-                            )
+                            peers.append(node.get_human_friendly_id_as_string(include_kind=True) or node.id)
                         val = ",".join(peers)
                 # Attribute
                 else:
