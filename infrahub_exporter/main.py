@@ -16,6 +16,11 @@ from .metrics_exporter import MetricsExporter
 
 # Setup root logger
 logger = logging.getLogger("infrahub-sidecar")
+handler = logging.StreamHandler(sys.stdout)
+handler.setFormatter(
+    logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+)
+logger.addHandler(handler)
 
 
 class Server:

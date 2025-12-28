@@ -7,8 +7,7 @@ services:
       dockerfile: Dockerfile
     image: infrahub-exporter:latest
     environment:
-      - INFRAHUB_exporter_LOG_LEVEL=INFO
-      - exporter_CONFIG=/app/config.yml
+      - INFRAHUB_SIDECAR_LOG_LEVEL=INFO
       - OTEL_METRIC_EXPORT_INTERVAL=30000
     volumes:
       - ../examples/config.yml:/app/config.yml:ro
