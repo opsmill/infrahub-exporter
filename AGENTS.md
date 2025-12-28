@@ -59,7 +59,7 @@ Configuration is YAML-based (see `examples/config.yml`). Key sections:
 
 ## Python Version
 
-Targets Python 3.10-3.12 (see `pyproject.toml`).
+Targets Python 3.10-3.13 (see `pyproject.toml`).
 
 ## Type Checking
 

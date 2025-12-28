@@ -38,7 +38,7 @@ class Server:
         self.sd_manager = ServiceDiscoveryManager(client) if sd_config and sd_config.enabled else None
         self._setup_routes()
 
-    def _setup_routes(self) -> JSONResponse | None:
+    def _setup_routes(self) -> None:
         @self.app.get("/")
         async def health() -> PlainTextResponse:
             return PlainTextResponse("OK")
@@ -62,7 +62,6 @@ class Server:
                     return await self._handle_sd(q)
 
                 logger.info(f"Registered SD endpoint: {path}")
-        return None
 
     async def _handle_sd(self, query: ServiceDiscoveryQuery) -> JSONResponse:
         if self.sd_manager:

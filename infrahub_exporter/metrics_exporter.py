@@ -32,7 +32,7 @@ class MetricsExporter(Collector):
     """Unified metrics exporter for Prometheus and OTLP based on configured kinds."""
 
     class MetricMeter:
-        def __init__(self, kp: MetricsKind, exporter: "MetricsExporter"):
+        def __init__(self, kp: MetricsKind, exporter: "MetricsExporter") -> None:
             self.kp = kp
             self.exporter = exporter
 
@@ -45,7 +45,7 @@ class MetricsExporter(Collector):
                     attributes={label: entry.labels.get(label, "") for label in labels},
                 )
 
-    def __init__(self, client: InfrahubClient, settings: SidecarSettings):
+    def __init__(self, client: InfrahubClient, settings: SidecarSettings) -> None:
         self.client = client
         self.settings = settings
         self._store: dict[str, list[MetricEntry]] = {}
@@ -100,7 +100,7 @@ class MetricsExporter(Collector):
                 )
             yield metric
 
-    async def _fetch_and_store(self, kp: Any) -> None:
+    async def _fetch_and_store(self, kp: MetricsKind) -> None:
         """Fetch items for one kind and store MetricEntry list."""
         try:
             items: list[InfrahubNode] = []
