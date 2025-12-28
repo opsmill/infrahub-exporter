@@ -1,10 +1,10 @@
-import time
 import logging
+import time
 from pathlib import Path
 from typing import Any
 
-from pydantic import BaseModel
 from infrahub_sdk import InfrahubClient
+from pydantic import BaseModel
 
 from .config import ServiceDiscoveryQuery
 

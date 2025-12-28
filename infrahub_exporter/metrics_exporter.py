@@ -2,19 +2,18 @@ import asyncio
 import logging
 from typing import Any, Generator
 
-from prometheus_client.core import GaugeMetricFamily, REGISTRY
-from prometheus_client.registry import Collector
-from opentelemetry import metrics as otel_metrics
-from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
-from opentelemetry.sdk.metrics import MeterProvider
-from opentelemetry.metrics import Observation
-from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
-
 from infrahub_sdk import InfrahubClient
 from infrahub_sdk.exceptions import SchemaNotFoundError
 from infrahub_sdk.node.node import InfrahubNode
 from infrahub_sdk.node.relationship import RelationshipManager
 from infrahub_sdk.protocols_base import RelatedNode
+from opentelemetry import metrics as otel_metrics
+from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
+from opentelemetry.metrics import Observation
+from opentelemetry.sdk.metrics import MeterProvider
+from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
+from prometheus_client.core import REGISTRY, GaugeMetricFamily
+from prometheus_client.registry import Collector
 
 from .config import MetricsKind, SidecarSettings
 

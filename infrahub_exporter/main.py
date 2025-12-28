@@ -1,18 +1,17 @@
+import argparse
 import asyncio
 import logging
-import argparse
 import sys
-import uvicorn
 
+import uvicorn
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse, PlainTextResponse
+from infrahub_sdk import Config, InfrahubClient
 from prometheus_client import REGISTRY, generate_latest
 
-from infrahub_sdk import Config, InfrahubClient
-
 from .config import ServiceDiscoveryConfig, ServiceDiscoveryQuery, SidecarSettings
-from .service_discovery import ServiceDiscoveryManager
 from .metrics_exporter import MetricsExporter
+from .service_discovery import ServiceDiscoveryManager
 
 # Setup root logger
 logger = logging.getLogger("infrahub-sidecar")
