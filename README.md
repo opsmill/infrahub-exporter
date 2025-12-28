@@ -22,4 +22,4 @@ Infrahub Exporter acts as a bridge between your Infrahub instance and monitoring
 
 ## Using Infrahub exporter
 
-Documentation for using Infrahub exporter is available [here](https://docs.infrahub.app/exporter/)
+Documentation for using Infrahub exporter is available in the [Infrahub Exporter documentation](https://docs.infrahub.app/integrations/exporter/).
