@@ -1,25 +1,22 @@
+import argparse
 import asyncio
 import logging
-import argparse
 import sys
-import uvicorn
 
+import uvicorn
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse, PlainTextResponse
+from infrahub_sdk import Config, InfrahubClient
 from prometheus_client import REGISTRY, generate_latest
 
-from infrahub_sdk import Config, InfrahubClient
-
 from .config import ServiceDiscoveryConfig, ServiceDiscoveryQuery, SidecarSettings
-from .service_discovery import ServiceDiscoveryManager
 from .metrics_exporter import MetricsExporter
+from .service_discovery import ServiceDiscoveryManager
 
 # Setup root logger
 logger = logging.getLogger("infrahub-sidecar")
 handler = logging.StreamHandler(sys.stdout)
-handler.setFormatter(
-    logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-)
+handler.setFormatter(logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s"))
 logger.addHandler(handler)
 
 
@@ -38,12 +35,10 @@ class Server:
         self.listen_address = listen_address
         self.listen_port = listen_port
         self.app = FastAPI(title="Infrahub Sidecar")
-        self.sd_manager = (
-            ServiceDiscoveryManager(client) if sd_config and sd_config.enabled else None
-        )
+        self.sd_manager = ServiceDiscoveryManager(client) if sd_config and sd_config.enabled else None
         self._setup_routes()
 
-    def _setup_routes(self) -> JSONResponse | None:
+    def _setup_routes(self) -> None:
         @self.app.get("/")
         async def health() -> PlainTextResponse:
             return PlainTextResponse("OK")
@@ -63,22 +58,17 @@ class Server:
                 path = f"/sd/{query.name}"
 
                 @self.app.get(path)
-                async def sd_endpoint(
-                    req: Request, q: ServiceDiscoveryQuery = query
-                ) -> JSONResponse:
+                async def sd_endpoint(req: Request, q: ServiceDiscoveryQuery = query) -> JSONResponse:
                     return await self._handle_sd(q)
 
                 logger.info(f"Registered SD endpoint: {path}")
-        return None
 
     async def _handle_sd(self, query: ServiceDiscoveryQuery) -> JSONResponse:
         if self.sd_manager:
             try:
                 targets = await self.sd_manager.get_targets(query)
                 resp = JSONResponse(content=targets)
-                resp.headers["X-Prometheus-Refresh-Interval-Seconds"] = str(
-                    query.refresh_interval_seconds
-                )
+                resp.headers["X-Prometheus-Refresh-Interval-Seconds"] = str(query.refresh_interval_seconds)
                 return resp
             except Exception as e:
                 logger.error(f"SD '{query.name}' error: {e}")
@@ -104,9 +94,7 @@ class Server:
 
 async def main() -> None:
     parser = argparse.ArgumentParser(description="Infrahub Sidecar Service")
-    parser.add_argument(
-        "-c", "--config", default="config.yml", help="Path to YAML config file"
-    )
+    parser.add_argument("-c", "--config", default="config.yml", help="Path to YAML config file")
     parser.add_argument(
         "--log-level",
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
