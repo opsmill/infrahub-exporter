@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any
 
 from infrahub_sdk import InfrahubClient
+from infrahub_sdk.exceptions import GraphQLError
 from pydantic import BaseModel
 
 from .config import ServiceDiscoveryQuery
@@ -55,17 +56,15 @@ class ServiceDiscoveryManager:
         try:
             resp = await self.client.execute_graphql(
                 query=content,
-                raise_for_error=False,
             )
+        except GraphQLError as e:
+            logger.error(f"GraphQL errors in '{query.name}': {e}")
+            return []
         except Exception as e:
             logger.error(f"GraphQL execution failed for '{query.name}': {e}")
             return []
 
-        if "errors" in resp:
-            logger.error(f"GraphQL errors in '{query.name}': {resp['errors']}")
-            return []
-
-        raw = resp.get("data", resp)
+        raw = resp
         targets: list[dict[str, Any]] = []
         for kind_name, data_block in raw.items():
             edges = data_block.get("edges") if isinstance(data_block, dict) else None
